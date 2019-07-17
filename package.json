@@ -8,6 +8,9 @@
     "eslint": "eslint",
     "webpack": "webpack"
   },
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AdrewBraz/frontend-project-lvl3.git"

@@ -4,9 +4,6 @@ install:
 build:
 	npm run webpack
 
-test:
-	npm test
-
 lint:
 	npx eslint .
 

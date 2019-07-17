@@ -6,4 +6,4 @@
 
 [![Build Status](https://travis-ci.org/AdrewBraz/frontend-project-lvl3.svg?branch=master)](https://travis-ci.org/AdrewBraz/frontend-project-lvl3)
 
-[Link](infamous-regret.surge.sh)
+[Link](http://infamous-regret.surge.sh/)

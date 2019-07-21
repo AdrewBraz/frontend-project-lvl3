@@ -29,7 +29,6 @@ const app = () => {
   };
 
   const getContent = (feed) => {
-    console.log(feed);
     const title = getFeedElement(feed, 'title', 'single');
     const description = getFeedElement(feed, 'description', 'single');
     const articles = [];

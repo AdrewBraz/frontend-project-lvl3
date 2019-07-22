@@ -25,7 +25,25 @@ const app = () => {
   const addVisitedUrl = () => {
     const list = state.feedList.reduce((acc, feed) => [...acc, feed.url], []);
     state.visitedUrls = [...list];
-    console.log(state);
+    console.log(state.feedList);
+  };
+
+  const render = (prop) => {
+    const { url, content } = state.feedList[prop];
+    const newItem = document.createElement('li');
+    newItem.classList.add('list-group-item');
+    newItem.dataset.url = url;
+
+    const feedArticles = content.articles.reduce((acc, article) => `${acc}<li class="list-group-item">
+        <h3>${article.title}</h3>
+        <a href="${article.link}">${article.description}</a>
+      </li>`, []);
+
+    const feedContent = `<h2>${content.title}</h2>
+    <p>${content.description}<p>
+    <ul class="list-group">${feedArticles}</ul>`;
+    newItem.insertAdjacentHTML('beforeend', feedContent);
+    document.body.appendChild(newItem);
   };
 
   const getContent = (feed) => {
@@ -43,8 +61,8 @@ const app = () => {
     return newFeed;
   };
 
-
   watch(state.feedList, addVisitedUrl);
+  watch(state.feedList, render);
 
   input.addEventListener('input', (e) => {
     const { value } = e.target;

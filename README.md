@@ -6,4 +6,4 @@
 
 [![Build Status](https://travis-ci.org/AdrewBraz/frontend-project-lvl3.svg?branch=master)](https://travis-ci.org/AdrewBraz/frontend-project-lvl3)
 
-[Link](madly-copper.surge.sh)
+[Link](http://madly-copper.surge.sh/)

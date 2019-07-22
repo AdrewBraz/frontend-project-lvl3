@@ -1,8 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/js/dist/modal';
 import { isURL } from 'validator';
 import axios from 'axios';
 import watchJs from 'melanke-watchjs';
+import $ from 'jquery';
 import getFeedElement from './getFeedElement';
+
 
 const parser = new DOMParser();
 const { watch } = watchJs;
@@ -36,7 +39,10 @@ const app = () => {
 
     const feedArticles = content.articles.reduce((acc, article) => `${acc}<li class="list-group-item">
         <h3>${article.title}</h3>
-        <a href="${article.link}">${article.description}</a>
+        <span class=" d-flex justify-content-between">
+          <a href="${article.link}">${article.description}</a>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" data-description="${article.description}">Description</button>
+        </span>
       </li>`, []);
 
     const feedContent = `<h2>${content.title}</h2>
@@ -87,6 +93,11 @@ const app = () => {
         .then(feed => addFeed(feedUrl, getContent(feed)))
         .catch(err => console.log(err));
     }
+  });
+
+  $('#myModal').on('show.bs.modal', (e) => {
+    const text = $(e.relatedTarget).data('description');
+    $('body').find('.modal-body').text(text);
   });
 };
 

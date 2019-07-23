@@ -4,7 +4,7 @@ import { isURL } from 'validator';
 import axios from 'axios';
 import watchJs from 'melanke-watchjs';
 import $ from 'jquery';
-import getFeedElement from './getFeedElement';
+import render from './render';
 
 
 const parser = new DOMParser();
@@ -14,77 +14,96 @@ const proxy = 'https://cors-anywhere.herokuapp.com/';
 const app = () => {
   const state = {
     feedList: [],
-    visitedUrls: [],
+    inputUrl: 'empty',
   };
 
-  const isValid = value => isURL(value) && !state.visitedUrls.includes(value);
   const input = document.getElementById('text');
   const submit = document.querySelector('[type=submit]');
 
   const addFeed = (url, content) => {
     state.feedList.push({ url, content });
+    console.log(state);
   };
 
-  const addVisitedUrl = () => {
-    const list = state.feedList.reduce((acc, feed) => [...acc, feed.url], []);
-    state.visitedUrls = [...list];
-    console.log(state.feedList);
+  const isVisitedUrl = (url) => {
+    const listOfUrls = state.feedList.reduce((acc, feed) => [...acc, feed.url], []);
+    return listOfUrls.includes(url);
   };
 
-  const render = (prop) => {
-    const { url, content } = state.feedList[prop];
-    const newItem = document.createElement('li');
-    newItem.classList.add('list-group-item');
-    newItem.dataset.url = url;
+  const updateUrl = (value) => {
+    const urlList = [
+      {
+        name: 'empty',
+        check: url => url === '',
+      },
+      {
+        name: 'notValid',
+        check: url => !isURL(url),
+      },
+      {
+        name: 'visited',
+        check: url => isVisitedUrl(url),
+      },
+      {
+        name: 'valid',
+        check: url => url,
+      },
+    ];
+    const { name } = urlList.find(({ check }) => check(value));
+    state.inputUrl = name;
+  };
 
-    const feedArticles = content.articles.reduce((acc, article) => `${acc}<li class="list-group-item">
-        <h3>${article.title}</h3>
-        <span class=" d-flex justify-content-between">
-          <a href="${article.link}">${article.description}</a>
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" data-description="${article.description}">Description</button>
-        </span>
-      </li>`, []);
-
-    const feedContent = `<h2>${content.title}</h2>
-    <p>${content.description}<p>
-    <ul class="list-group">${feedArticles}</ul>`;
-    newItem.insertAdjacentHTML('beforeend', feedContent);
-    document.body.appendChild(newItem);
+  const checkUrlState = () => {
+    switch (state.inputUrl) {
+      case 'empty':
+        input.classList.remove('is-valid', 'is-invalid');
+        break;
+      case 'notValid':
+        input.classList.remove('is-valid');
+        input.classList.add('is-invalid');
+        break;
+      case 'visited':
+        input.classList.add('is-valid');
+        input.classList.add('is-invalid');
+        break;
+      case 'valid':
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+        break;
+      default:
+        input.classList.remove('is-valid', 'is-invalid');
+    }
   };
 
   const getContent = (feed) => {
-    const title = getFeedElement(feed, 'title', 'single');
-    const description = getFeedElement(feed, 'description', 'single');
-    const articles = [];
-    getFeedElement(feed, 'item', 'multiple').forEach((article) => {
-      const newArticle = {};
-      newArticle.title = getFeedElement(article, 'title', 'single');
-      newArticle.description = getFeedElement(article, 'description', 'single');
-      newArticle.link = getFeedElement(article, 'link', 'single');
-      articles.push(newArticle);
+    const newFeed = { articles: [] };
+    const elementList = ['title', 'description', 'link'];
+    const articleList = feed.querySelectorAll('item');
+    elementList.forEach((element) => {
+      const value = feed.querySelector(element).textContent;
+      newFeed[element] = value;
     });
-    const newFeed = { title, description, articles };
+    articleList.forEach((article) => {
+      const newArticle = {};
+      elementList.forEach((element) => {
+        const value = article.querySelector(element).textContent;
+        newArticle[element] = value;
+      });
+      newFeed.articles.push(newArticle);
+    });
     return newFeed;
   };
 
-  watch(state.feedList, addVisitedUrl);
-  watch(state.feedList, render);
+  watch(state, 'inputUrl', checkUrlState);
+  watch(state, 'feedList', render);
 
   input.addEventListener('input', (e) => {
     const { value } = e.target;
-    if (value === '') {
-      e.target.classList.remove('is-valid', 'is-invalid');
-    } else if (isValid(value)) {
-      e.target.classList.remove('is-invalid');
-      e.target.classList.add('is-valid');
-    } else {
-      e.target.classList.remove('is-valid');
-      e.target.classList.add('is-invalid');
-    }
+    updateUrl(value);
   });
 
   submit.addEventListener('click', () => {
-    if (input.value !== '' && isValid(input.value)) {
+    if (state.inputUrl === 'valid') {
       const feedUrl = input.value;
       input.classList.remove('is-valid');
       input.value = '';

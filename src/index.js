@@ -4,8 +4,6 @@ import { isURL } from 'validator';
 import axios from 'axios';
 import watchJs from 'melanke-watchjs';
 import $ from 'jquery';
-import render from './render';
-
 
 const parser = new DOMParser();
 const { watch } = watchJs;
@@ -15,10 +13,12 @@ const app = () => {
   const state = {
     feedList: [],
     inputUrl: 'empty',
+    modalDescription: '',
   };
 
   const input = document.getElementById('text');
   const submit = document.querySelector('[type=submit]');
+  const container = document.querySelector('.feed');
 
   const addFeed = (url, content) => {
     state.feedList.push({ url, content });
@@ -75,6 +75,23 @@ const app = () => {
     }
   };
 
+  const render = (prop) => {
+    const { url, content } = state.feedList[prop];
+    const newItem = document.createElement('li');
+    newItem.classList.add('list-group-item');
+    newItem.dataset.url = url;
+    const feedArticles = content.articles.reduce((acc, article) => `${acc}<li class="list-group-item d-flex justify-content-between">
+        <h3>${article.title}</h3>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" data-description="${article.description}">Description</button>
+      </li>`, []);
+    const feedContent = `<h2>${content.title}</h2>
+    <p>${content.description}<p>
+    <ul class="list-group">${feedArticles}</ul>`;
+    newItem.insertAdjacentHTML('beforeend', feedContent);
+    console.log(container);
+    container.appendChild(newItem);
+  };
+
   const getContent = (feed) => {
     const newFeed = { articles: [] };
     const elementList = ['title', 'description', 'link'];
@@ -96,6 +113,7 @@ const app = () => {
 
   watch(state, 'inputUrl', checkUrlState);
   watch(state, 'feedList', render);
+  watch(state, 'modalDescription', () => $('body').find('.modal-body').text(state.modalDescription));
 
   input.addEventListener('input', (e) => {
     const { value } = e.target;
@@ -116,7 +134,7 @@ const app = () => {
 
   $('#myModal').on('show.bs.modal', (e) => {
     const text = $(e.relatedTarget).data('description');
-    $('body').find('.modal-body').text(text);
+    state.modalDescription = text;
   });
 };
 

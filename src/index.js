@@ -18,10 +18,11 @@ const app = () => {
 
   const input = document.getElementById('text');
   const submit = document.querySelector('[type=submit]');
-  const container = document.querySelector('.feed');
+  const feedListContainer = document.querySelector('.feedList');
+  const feedContainer = document.querySelector('.feed');
 
   const addFeed = (url, content) => {
-    state.feedList.push({ url, content });
+    state.feedList.push({ url, content, title: content.title });
     console.log(state);
   };
 
@@ -75,10 +76,20 @@ const app = () => {
     }
   };
 
+  const renderFeedList = () => {
+    const ul = document.createElement('ul');
+    ul.classList.add('list-group');
+    const result = state.feedList.reduce((acc, feedItem) => `<li class="list-group-item d-flex justify-content-between">
+      <a src="${feedItem.url}">${feedItem.title}</a>
+    </li>`, []);
+    ul.insertAdjacentHTML('beforeend', result);
+    feedListContainer.appendChild(ul);
+  };
+
   const render = (prop) => {
     const { url, content } = state.feedList[prop];
-    const newItem = document.createElement('li');
-    newItem.classList.add('list-group-item');
+    const newItem = document.createElement('div');
+    newItem.classList.add('list-group');
     newItem.dataset.url = url;
     const feedArticles = content.articles.reduce((acc, article) => `${acc}<li class="list-group-item d-flex justify-content-between">
         <h3>${article.title}</h3>
@@ -88,8 +99,7 @@ const app = () => {
     <p>${content.description}<p>
     <ul class="list-group">${feedArticles}</ul>`;
     newItem.insertAdjacentHTML('beforeend', feedContent);
-    console.log(container);
-    container.appendChild(newItem);
+    feedContainer.appendChild(newItem);
   };
 
   const getContent = (feed) => {
@@ -112,6 +122,7 @@ const app = () => {
   };
 
   watch(state, 'inputUrl', checkUrlState);
+  watch(state, 'feedList', renderFeedList);
   watch(state, 'feedList', render);
   watch(state, 'modalDescription', () => $('body').find('.modal-body').text(state.modalDescription));
 
@@ -122,9 +133,9 @@ const app = () => {
 
   submit.addEventListener('click', () => {
     if (state.inputUrl === 'valid') {
-      const feedUrl = input.value;
-      input.classList.remove('is-valid');
+      const feedUrl = input.value;  
       input.value = '';
+      updateUrl(input.value);
       axios(`${proxy}${feedUrl}`)
         .then(res => parser.parseFromString(res.data, 'text/xml'))
         .then(feed => addFeed(feedUrl, getContent(feed)))

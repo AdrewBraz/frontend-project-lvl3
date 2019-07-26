@@ -4,6 +4,7 @@ import { isURL } from 'validator';
 import axios from 'axios';
 import watchJs from 'melanke-watchjs';
 import $ from 'jquery';
+import { renderFeedList } from './render';
 
 const parser = new DOMParser();
 const { watch } = watchJs;
@@ -76,16 +77,6 @@ const app = () => {
     }
   };
 
-  const renderFeedList = () => {
-    const ul = document.createElement('ul');
-    ul.classList.add('list-group');
-    const result = state.feedList.reduce((acc, feedItem) => `<li class="list-group-item d-flex justify-content-between">
-      <a src="${feedItem.url}">${feedItem.title}</a>
-    </li>`, []);
-    ul.insertAdjacentHTML('beforeend', result);
-    feedListContainer.appendChild(ul);
-  };
-
   const render = (prop) => {
     const { url, content } = state.feedList[prop];
     const newItem = document.createElement('div');
@@ -122,7 +113,10 @@ const app = () => {
   };
 
   watch(state, 'inputUrl', checkUrlState);
-  watch(state, 'feedList', renderFeedList);
+  watch(state, 'feedList', () => {
+    const feedList = renderFeedList(state.feedList);
+    feedListContainer.appendChild(feedList);
+  });
   watch(state, 'feedList', render);
   watch(state, 'modalDescription', () => $('body').find('.modal-body').text(state.modalDescription));
 
@@ -133,7 +127,7 @@ const app = () => {
 
   submit.addEventListener('click', () => {
     if (state.inputUrl === 'valid') {
-      const feedUrl = input.value;  
+      const feedUrl = input.value;
       input.value = '';
       updateUrl(input.value);
       axios(`${proxy}${feedUrl}`)

@@ -4,7 +4,9 @@ import { isURL } from 'validator';
 import axios from 'axios';
 import watchJs from 'melanke-watchjs';
 import $ from 'jquery';
-import { renderFeedList } from './render';
+import uniqid from 'uniqid';
+import _ from 'lodash';
+import { renderFeedList, render } from './render';
 
 const parser = new DOMParser();
 const { watch } = watchJs;
@@ -12,9 +14,11 @@ const proxy = 'https://cors-anywhere.herokuapp.com/';
 
 const app = () => {
   const state = {
-    feedList: [],
+    visitedIds: [],
+    feedList: {},
     inputUrl: 'empty',
     modalDescription: '',
+    activeFeedId: '',
   };
 
   const input = document.getElementById('text');
@@ -22,14 +26,28 @@ const app = () => {
   const feedListContainer = document.querySelector('.feedList');
   const feedContainer = document.querySelector('.feed');
 
-  const addFeed = (url, content) => {
-    state.feedList.push({ url, content, title: content.title });
-    console.log(state);
+  const addFeed = (id, url, content) => {
+    state.feedList[id] = { url, content, title: content.title };
   };
 
-  const isVisitedUrl = (url) => {
-    const listOfUrls = state.feedList.reduce((acc, feed) => [...acc, feed.url], []);
-    return listOfUrls.includes(url);
+  const addVisited = () => {
+    const keys = Object.keys(state.feedList);
+    console.log(keys);
+    state.visitedIds = keys.reduce((acc, key) => [...acc, key], []);
+  };
+
+  const updateFeed = (id, updatedArticles) => {
+    const { content } = state.feedList[id];
+    content.articles = updatedArticles;
+  };
+
+  const isVisitedUrl = (newUrl) => {
+    const keys = Object.keys(state.feedList);
+    const listOfUrls = keys.reduce((acc, feed) => {
+      const { url } = state.feedList[feed];
+      return [...acc, url];
+    }, []);
+    return listOfUrls.includes(newUrl);
   };
 
   const updateUrl = (value) => {
@@ -77,22 +95,6 @@ const app = () => {
     }
   };
 
-  const render = (prop) => {
-    const { url, content } = state.feedList[prop];
-    const newItem = document.createElement('div');
-    newItem.classList.add('list-group');
-    newItem.dataset.url = url;
-    const feedArticles = content.articles.reduce((acc, article) => `${acc}<li class="list-group-item d-flex justify-content-between">
-        <h3>${article.title}</h3>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" data-description="${article.description}">Description</button>
-      </li>`, []);
-    const feedContent = `<h2>${content.title}</h2>
-    <p>${content.description}<p>
-    <ul class="list-group">${feedArticles}</ul>`;
-    newItem.insertAdjacentHTML('beforeend', feedContent);
-    feedContainer.appendChild(newItem);
-  };
-
   const getContent = (feed) => {
     const newFeed = { articles: [] };
     const elementList = ['title', 'description', 'link'];
@@ -112,12 +114,41 @@ const app = () => {
     return newFeed;
   };
 
+  const updateRSS = () => {
+    const keys = Object.keys(state.feedList);
+    if (keys === 0) {
+      setTimeout(updateRSS, 5000);
+    } else {
+      keys.forEach((key) => {
+        const { url, content } = state.feedList[key];
+        axios(`${proxy}${url}`)
+          .then(res => parser.parseFromString(res.data, 'text/xml'))
+          .then((feed) => {
+            const { articles } = getContent(feed);
+            const updatedFeed = _.unionBy(articles, content.articles, 'title');
+            updateFeed(key, updatedFeed);
+            setTimeout(updateRSS, 5000);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      });
+    }
+  };
+
+  setTimeout(updateRSS, 5000);
+
   watch(state, 'inputUrl', checkUrlState);
+  watch(state, 'feedList', addVisited);
   watch(state, 'feedList', () => {
+    $(feedContainer).empty();
+    const feed = render(state.activeFeedId, state.feedList);
+    feedContainer.appendChild(feed);
+  }, 3, true);
+  watch(state, 'visitedIds', () => {
     const feedList = renderFeedList(state.feedList);
     feedListContainer.appendChild(feedList);
   });
-  watch(state, 'feedList', render);
   watch(state, 'modalDescription', () => $('body').find('.modal-body').text(state.modalDescription));
 
   input.addEventListener('input', (e) => {
@@ -128,11 +159,13 @@ const app = () => {
   submit.addEventListener('click', () => {
     if (state.inputUrl === 'valid') {
       const feedUrl = input.value;
+      const id = uniqid();
+      state.activeFeedId = id;
       input.value = '';
       updateUrl(input.value);
       axios(`${proxy}${feedUrl}`)
         .then(res => parser.parseFromString(res.data, 'text/xml'))
-        .then(feed => addFeed(feedUrl, getContent(feed)))
+        .then(feed => addFeed(id, feedUrl, getContent(feed)))
         .catch(err => console.log(err));
     }
   });

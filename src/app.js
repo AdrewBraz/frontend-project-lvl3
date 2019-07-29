@@ -1,5 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/js/dist/modal';
 import { isURL } from 'validator';
 import axios from 'axios';
 import watchJs from 'melanke-watchjs';

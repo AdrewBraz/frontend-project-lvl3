@@ -6,7 +6,7 @@ import watchJs from 'melanke-watchjs';
 import $ from 'jquery';
 import uniqid from 'uniqid';
 import _ from 'lodash';
-import { renderFeedList, render } from './render';
+import { renderFeedList, renderFeed } from './render';
 
 const parser = new DOMParser();
 const { watch } = watchJs;
@@ -14,7 +14,6 @@ const proxy = 'https://cors-anywhere.herokuapp.com/';
 
 const app = () => {
   const state = {
-    visitedIds: [],
     feedList: {},
     inputUrl: 'empty',
     modalDescription: '',
@@ -23,17 +22,9 @@ const app = () => {
 
   const input = document.getElementById('text');
   const submit = document.querySelector('[type=submit]');
-  const feedListContainer = document.querySelector('.feedList');
-  const feedContainer = document.querySelector('.feed');
 
   const addFeed = (id, url, content) => {
     state.feedList[id] = { url, content, title: content.title };
-  };
-
-  const addVisited = () => {
-    const keys = Object.keys(state.feedList);
-    console.log(keys);
-    state.visitedIds = keys.reduce((acc, key) => [...acc, key], []);
   };
 
   const updateFeed = (id, updatedArticles) => {
@@ -114,10 +105,10 @@ const app = () => {
     return newFeed;
   };
 
-  const updateRSS = () => {
+  const updateRSSFeeds = () => {
     const keys = Object.keys(state.feedList);
     if (keys === 0) {
-      setTimeout(updateRSS, 5000);
+      setTimeout(updateRSSFeeds, 5000);
     } else {
       keys.forEach((key) => {
         const { url, content } = state.feedList[key];
@@ -127,7 +118,7 @@ const app = () => {
             const { articles } = getContent(feed);
             const updatedFeed = _.unionBy(articles, content.articles, 'title');
             updateFeed(key, updatedFeed);
-            setTimeout(updateRSS, 5000);
+            setTimeout(updateRSSFeeds, 5000);
           })
           .catch((err) => {
             console.error(err);
@@ -136,19 +127,11 @@ const app = () => {
     }
   };
 
-  setTimeout(updateRSS, 5000);
+  setTimeout(updateRSSFeeds, 5000);
 
   watch(state, 'inputUrl', checkUrlState);
-  watch(state, 'feedList', addVisited);
-  watch(state, 'feedList', () => {
-    $(feedContainer).empty();
-    const feed = render(state.activeFeedId, state.feedList);
-    feedContainer.appendChild(feed);
-  }, 3, true);
-  watch(state, 'visitedIds', () => {
-    const feedList = renderFeedList(state.feedList);
-    feedListContainer.appendChild(feedList);
-  });
+  watch(state, 'feedList', () => renderFeed(state.activeFeedId, state.feedList), 3, true);
+  watch(state, 'feedList', () => renderFeedList(state.feedList));
   watch(state, 'modalDescription', () => $('body').find('.modal-body').text(state.modalDescription));
 
   input.addEventListener('input', (e) => {

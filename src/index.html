@@ -10,9 +10,20 @@
     <div class="jumbotron">
       <div class="form-group">
         <h1>RSS Reader</h1>
-        <input type="input" class="form-control" id="text" placeholder="Your URL">
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <form id="rss-form">
+        <div class="input-group flex-column mb-3">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <button type="submit" class="btn btn-primary" id="btn-add-channel">Add Feed</button>
+            </div>
+            <input type="text" name="input" class="form-control" id="input" placeholder="url" aria-label="url">
+          </div>
+          <small id="message" class="form-text text-muted">
+            Please, be sure your URL is valid
+          </small>
+        </div>
+      </form>
     </div>
     <div class="container">
       <div class="row">

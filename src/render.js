@@ -1,10 +1,10 @@
 const feedListContainer = document.querySelector('.feedList');
 const feedContainer = document.querySelector('.feed');
 
-export const renderFeedList = (list) => {
-  const keys = Object.keys(list);
+export const renderFeedList = (coll) => {
+  const keys = Object.keys(coll);
   const result = keys.reduce((acc, feedItem) => {
-    const { title, url } = list[feedItem];
+    const { title, url } = coll[feedItem];
     return `${acc}<li class="list-group-item d-flex justify-content-between">
       <a src="${url}">${title}</a>
     </li>`;
@@ -12,8 +12,8 @@ export const renderFeedList = (list) => {
   feedListContainer.innerHTML = `<ul class="list-group">${result}</ul>`;
 };
 
-export const renderFeed = (id, list) => {
-  const { url, content } = list[id];
+export const renderFeed = (id, coll) => {
+  const { url, content } = coll[id];
   const feedArticles = content.articles.reduce((acc, article) => `${acc}<li class="list-group-item d-flex justify-content-between">
       <h3>${article.title}</h3>
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" data-description="${article.description}">Description</button>

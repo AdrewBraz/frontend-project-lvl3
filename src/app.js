@@ -4,7 +4,8 @@ import watchJs from 'melanke-watchjs';
 import $ from 'jquery';
 import uniqid from 'uniqid';
 import _ from 'lodash';
-import {  renderFeed, renderFeedList } from './render';
+import { renderFeed, renderFeedList } from './render';
+import parseContent from './parsers';
 
 const parser = new DOMParser();
 const { watch } = watchJs;
@@ -37,6 +38,9 @@ const app = () => {
     return keys.find(({ url }) => url === newUrl);
   };
 
+  const getDataFromUrl = feedUrl => axios(`${proxy}${feedUrl}`)
+    .then(res => parser.parseFromString(res.data, 'text/xml'))
+    .then(feed => parseContent(feed));
 
   const updateUrl = (value) => {
     const urlList = [
@@ -103,25 +107,6 @@ const app = () => {
     }
   };
 
-  const getContent = (feed) => {
-    const newFeed = { articles: [] };
-    const elementList = ['title', 'description', 'link'];
-    const articleList = feed.querySelectorAll('item');
-    elementList.forEach((element) => {
-      const value = feed.querySelector(element).textContent;
-      newFeed[element] = value;
-    });
-    articleList.forEach((article) => {
-      const newArticle = {};
-      elementList.forEach((element) => {
-        const value = article.querySelector(element).textContent;
-        newArticle[element] = value;
-      });
-      newFeed.articles.push(newArticle);
-    });
-    return newFeed;
-  };
-
   const updateRSSFeeds = () => {
     const keys = Object.keys(state.feedCollection);
     if (keys === 0) {
@@ -132,11 +117,10 @@ const app = () => {
         axios(`${proxy}${url}`)
           .then(res => parser.parseFromString(res.data, 'text/xml'))
           .then((feed) => {
-            const { articles } = getContent(feed);
+            const { articles } = parseContent(feed);
             const updatedFeed = _.unionBy(articles, content.articles, 'title');
             updateFeed(key, updatedFeed);
           })
-          .finally()
           .catch((err) => {
             console.error(err);
           });
@@ -165,11 +149,10 @@ const app = () => {
       const feedUrl = input.value;
       state.activeFeedId = uniqid();
       state.requestState = 'loading';
-      axios(`${proxy}${feedUrl}`)
-        .then(res => parser.parseFromString(res.data, 'text/xml'))
-        .then(feed => {
+      getDataFromUrl(feedUrl)
+        .then((data) => {
+          addFeed(state.activeFeedId, feedUrl, data);
           state.requestState = 'success';
-          addFeed(state.activeFeedId, feedUrl, getContent(feed))
         })
         .catch(err => console.log(err));
     }

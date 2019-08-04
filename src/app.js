@@ -1,25 +1,19 @@
-import { isURL } from 'validator';
 import axios from 'axios';
 import watchJs from 'melanke-watchjs';
 import $ from 'jquery';
 import uniqid from 'uniqid';
 import _ from 'lodash';
 import { renderFeed, renderFeedList } from './render';
+import { updateUrl, checkRequestState, checkUrlState } from './controllers';
+import state from './state';
 import parseContent from './parsers';
 
 const parser = new DOMParser();
 const { watch } = watchJs;
 const proxy = 'https://cors-anywhere.herokuapp.com/';
 
-const app = () => {
-  const state = {
-    feedCollection: {},
-    inputUrl: 'empty',
-    modalDescription: '',
-    activeFeedId: '',
-    requestState: null,
-  };
 
+const app = () => {
   const input = document.getElementById('input');
   const form = document.getElementById('rss-form');
   const message = document.getElementById('message');
@@ -33,79 +27,10 @@ const app = () => {
     content.articles = updatedArticles;
   };
 
-  const isVisitedUrl = (newUrl) => {
-    const keys = Object.values(state.feedCollection);
-    return keys.find(({ url }) => url === newUrl);
-  };
 
   const getDataFromUrl = feedUrl => axios(`${proxy}${feedUrl}`)
     .then(res => parser.parseFromString(res.data, 'text/xml'))
     .then(feed => parseContent(feed));
-
-  const updateUrl = (value) => {
-    const urlList = [
-      {
-        name: 'empty',
-        check: url => url === '',
-      },
-      {
-        name: 'notValid',
-        check: url => !isURL(url),
-      },
-      {
-        name: 'visited',
-        check: url => isVisitedUrl(url),
-      },
-      {
-        name: 'valid',
-        check: url => url,
-      },
-    ];
-    const { name } = urlList.find(({ check }) => check(value));
-    state.inputUrl = name;
-  };
-
-  const checkRequestState = () => {
-    switch (state.requestState) {
-      case 'loading':
-        message.textContent = 'Your feed is loading';
-        break;
-      case 'success':
-        message.textContent = 'URL added to Feed List';
-        input.value = '';
-        updateUrl('');
-        console.log('loaded');
-        break;
-      case 'error':
-        message.textContent = 'Something went wrong';
-        console.log('error');
-        break;
-      default:
-        break;
-    }
-  };
-
-  const checkUrlState = () => {
-    switch (state.inputUrl) {
-      case 'empty':
-        input.classList.remove('is-valid', 'is-invalid');
-        break;
-      case 'notValid':
-        input.classList.remove('is-valid');
-        input.classList.add('is-invalid');
-        break;
-      case 'visited':
-        input.classList.add('is-valid');
-        input.classList.add('is-invalid');
-        break;
-      case 'valid':
-        input.classList.remove('is-invalid');
-        input.classList.add('is-valid');
-        break;
-      default:
-        input.classList.remove('is-valid', 'is-invalid');
-    }
-  };
 
   const updateRSSFeeds = () => {
     const keys = Object.keys(state.feedCollection);

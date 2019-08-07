@@ -13,7 +13,6 @@ export const renderFeedList = (coll) => {
 };
 
 export const renderFeed = (id, coll) => {
-  console.log(coll, id);
   const { url, content } = coll[id];
   const feedArticles = content.articles.reduce((acc, article) => `${acc}<li class="list-group-item d-flex align-items-center justify-content-between" data-guid="${article.guid}">
       <h3>${article.title}</h3>

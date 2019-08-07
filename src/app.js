@@ -8,12 +8,10 @@ import {
   updateUrl, checkRequestState, checkUrlState, updateDisable,
 } from './controllers';
 import state from './state';
-import parseContent from './parsers';
+import parseContent from './parser';
 
-const parser = new DOMParser();
 const { watch } = watchJs;
 const proxy = 'https://cors-anywhere.herokuapp.com/';
-
 
 const app = () => {
   const input = document.getElementById('input');
@@ -31,8 +29,7 @@ const app = () => {
 
 
   const getDataFromUrl = feedUrl => axios(`${proxy}${feedUrl}`)
-    .then(res => parser.parseFromString(res.data, 'text/xml'))
-    .then(feed => parseContent(feed));
+    .then(res => parseContent(res.data));
 
   const updateRSSFeeds = () => {
     const keys = Object.keys(state.feedCollection);

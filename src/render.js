@@ -3,7 +3,6 @@ const feedContainer = document.querySelector('.feed');
 
 export const renderFeedList = (coll) => {
   const keys = Object.keys(coll);
-  console.log(keys);
   const result = keys.reduce((acc, feedItem) => {
     const { title, url } = coll[feedItem];
     return `${acc}<li class="list-group-item d-flex justify-content-between">
@@ -16,7 +15,7 @@ export const renderFeedList = (coll) => {
 export const renderFeed = (id, coll) => {
   console.log(coll, id);
   const { url, content } = coll[id];
-  const feedArticles = content.articles.reduce((acc, article) => `${acc}<li class="list-group-item d-flex justify-content-between">
+  const feedArticles = content.articles.reduce((acc, article) => `${acc}<li class="list-group-item d-flex align-items-center justify-content-between" data-guid="${article.guid}">
       <h3>${article.title}</h3>
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" data-description="${article.description}">Description</button>
     </li>`, []);

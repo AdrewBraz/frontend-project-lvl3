@@ -37,21 +37,21 @@ const app = () => {
   const updateRSSFeeds = () => {
     const keys = Object.keys(state.feedCollection);
     if (keys === 0) {
-      setTimeout(updateRSSFeeds, 5000);
+      setTimeout(updateRSSFeeds, 20000);
     } else {
       keys.forEach((key) => {
         const { url, content } = state.feedCollection[key];
         getDataFromUrl(url)
           .then((feed) => {
             const { articles } = feed;
-            const updatedFeed = _.unionBy(articles, content.articles, 'title');
+            const updatedFeed = _.unionBy(articles, content.articles, 'guid');
             updateFeed(key, updatedFeed);
           })
           .catch((err) => {
             console.error(err);
           })
           .finally(() => {
-            setTimeout(updateRSSFeeds, 5000);
+            setTimeout(updateRSSFeeds, 20000);
           });
       });
     }

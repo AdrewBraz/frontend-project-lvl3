@@ -3,16 +3,18 @@ const feedContainer = document.querySelector('.feed');
 
 export const renderFeedList = (coll) => {
   const keys = Object.keys(coll);
+  console.log(keys);
   const result = keys.reduce((acc, feedItem) => {
     const { title, url } = coll[feedItem];
     return `${acc}<li class="list-group-item d-flex justify-content-between">
-      <a src="${url}">${title}</a>
+      <a src="${url}" data-id="${feedItem}">${title}</a>
     </li>`;
   }, []);
   feedListContainer.innerHTML = `<ul class="list-group">${result}</ul>`;
 };
 
 export const renderFeed = (id, coll) => {
+  console.log(coll, id);
   const { url, content } = coll[id];
   const feedArticles = content.articles.reduce((acc, article) => `${acc}<li class="list-group-item d-flex justify-content-between">
       <h3>${article.title}</h3>

@@ -18,6 +18,7 @@ const proxy = 'https://cors-anywhere.herokuapp.com/';
 const app = () => {
   const input = document.getElementById('input');
   const form = document.getElementById('rss-form');
+  const feedListContainer = document.querySelector('.feedList');
 
   const addFeed = (id, url, content) => {
     state.feedCollection[id] = { url, content, title: content.title };
@@ -59,10 +60,10 @@ const app = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     const feedUrl = input.value;
-    state.activeFeedId = uniqid();
     state.requestState = 'loading';
     getDataFromUrl(feedUrl)
       .then((data) => {
+        state.activeFeedId = uniqid();
         addFeed(state.activeFeedId, feedUrl, data);
         state.requestState = 'success';
       })
@@ -77,8 +78,8 @@ const app = () => {
   watch(state, 'inputUrl', checkUrlState);
   watch(state, 'inputUrl', updateDisable);
   watch(state, 'requestState', checkRequestState);
-  watch(state, 'feedCollection', () => renderFeed(state.activeFeedId, state.feedCollection), 3, true);
-  watch(state, 'feedCollection', () => renderFeedList(state.feedCollection));
+  watch(state, 'activeFeedId', () => renderFeed(state.activeFeedId, state.feedCollection));
+  watch(state, 'feedCollection', () => renderFeedList(state.feedCollection), 1, true);
   watch(state, 'modalDescription', () => $('body').find('.modal-body').text(state.modalDescription));
 
   input.addEventListener('input', (e) => {
@@ -88,6 +89,10 @@ const app = () => {
 
   form.addEventListener('submit', (e) => {
     submitHandler(e);
+  });
+
+  feedListContainer.addEventListener('click', (e) => {
+    state.activeFeedId = e.target.dataset.id;
   });
 
   $('#myModal').on('show.bs.modal', (e) => {

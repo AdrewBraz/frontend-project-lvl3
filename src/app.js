@@ -34,7 +34,7 @@ const app = () => {
   const updateRSSFeeds = () => {
     const keys = Object.keys(state.feedCollection);
     if (keys === 0) {
-      setTimeout(updateRSSFeeds, 20000);
+      setTimeout(updateRSSFeeds, 5000);
     } else {
       keys.forEach((key) => {
         const { url, content } = state.feedCollection[key];
@@ -48,7 +48,7 @@ const app = () => {
             console.error(err);
           })
           .finally(() => {
-            setTimeout(updateRSSFeeds, 20000);
+            setTimeout(updateRSSFeeds, 5000);
           });
       });
     }
@@ -67,7 +67,8 @@ const app = () => {
       .catch((err) => {
         state.requestState = 'error';
         console.log(err);
-      });
+      })
+      .finally(() => { state.inputUrl = 'empty'; });
   };
 
   setTimeout(updateRSSFeeds, 5000);

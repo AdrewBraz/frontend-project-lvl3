@@ -5,9 +5,9 @@ export const renderFeedList = (coll) => {
   const keys = Object.keys(coll);
   const result = keys.reduce((acc, feedItem) => {
     const { title, url } = coll[feedItem];
-    return `${acc}<li class="list-group-item d-flex justify-content-between">
-      <a src="${url}" data-id="${feedItem}">${title}</a>
-    </li>`;
+    return `${acc}<a src="${url}" data-id="${feedItem}" class="list-group-item list-group-item-action active">
+      <p class="mb-1">${title}</p>
+    </a>`;
   }, []);
   feedListContainer.innerHTML = `<ul class="list-group">${result}</ul>`;
 };

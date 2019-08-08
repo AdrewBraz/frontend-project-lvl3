@@ -43,19 +43,14 @@ export const checkRequestState = () => {
       message.textContent = 'URL added to Feed List';
       message.classList.replace('text-info', 'text-success');
       input.value = '';
-      updateUrl('');
-      console.log('loaded');
       break;
     case 'error':
       message.textContent = 'Something went wrong';
       message.classList.replace('text-info', 'text-danger');
-
       input.value = '';
-      updateUrl('');
-      console.log('error');
       break;
     default:
-      break;
+      throw new Error('Uknown condition');
   }
 };
 
@@ -82,7 +77,7 @@ export const checkUrlState = () => {
       input.classList.add('is-valid');
       break;
     default:
-      input.classList.remove('is-valid', 'is-invalid');
+      throw new Error('Uknown condition');
   }
 };
 

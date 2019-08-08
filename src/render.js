@@ -5,7 +5,7 @@ export const renderFeedList = (coll) => {
   const keys = Object.keys(coll);
   const result = keys.reduce((acc, feedItem) => {
     const { title, url } = coll[feedItem];
-    return `${acc}<a src="${url}" data-id="${feedItem}" class="list-group-item list-group-item-action active">
+    return `${acc}<a src="${url}" data-id="${feedItem}" class="list-group-item list-group-item-action">
       <p class="mb-1">${title}</p>
     </a>`;
   }, []);

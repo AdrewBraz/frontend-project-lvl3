@@ -1,7 +1,11 @@
-export default {
-  feedCollection: {},
-  inputUrl: 'empty',
-  modalDescription: '',
-  activeFeedId: '',
-  requestState: null,
+export default () => {
+  const state = {
+    feedCollection: {},
+    inputUrl: 'empty',
+    modalDescription: '',
+    activeFeedId: '',
+    requestState: null,
+  };
+
+  return state;
 };

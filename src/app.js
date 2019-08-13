@@ -62,53 +62,6 @@ const app = () => {
     state.inputUrl = name;
   };
 
-  // const updateMessage = () => {
-  //   switch (state.requestState) {
-  //     case 'loading':
-  //       message.textContent = 'Your feed is loading';
-  //       message.classList.replace('text-muted', 'text-info');
-  //       break;
-  //     case 'success':
-  //       message.textContent = 'URL added to Feed List';
-  //       message.classList.replace('text-info', 'text-success');
-  //       break;
-  //     case 'error':
-  //       message.textContent = 'Something went wrong';
-  //       message.classList.replace('text-info', 'text-danger');
-  //       break;
-  //     default:
-  //       throw new Error('Uknown condition');
-  //   }
-  // };
-
-  const updateInput = () => {
-    switch (state.inputUrl) {
-      case 'empty':
-        input.classList.remove('is-valid', 'is-invalid');
-        setTimeout(() => {
-          message.classList.remove('text-success', 'text-danger');
-          message.classList.add('text-muted');
-          message.textContent = 'Please, be sure your URL is valid';
-        }, 5000);
-        break;
-      case 'notValid':
-        input.classList.remove('is-valid');
-        input.classList.add('is-invalid');
-        break;
-      case 'visited':
-        input.classList.remove('is-valid');
-        input.classList.add('is-invalid');
-        break;
-      case 'valid':
-        input.classList.remove('is-invalid');
-        input.classList.add('is-valid');
-        break;
-
-      default:
-        throw new Error('Uknown condition');
-    }
-  };
-
   const getDataFromUrl = feedUrl => axios(`${proxy}${feedUrl}`)
     .then(res => parseContent(res.data));
 
@@ -159,7 +112,33 @@ const app = () => {
 
   setTimeout(updateRSSFeeds, 5000);
 
-  watch(state, 'inputUrl', updateInput);
+  watch(state, 'inputUrl', () => {
+    switch (state.inputUrl) {
+      case 'empty':
+        input.classList.remove('is-valid', 'is-invalid');
+        setTimeout(() => {
+          message.classList.remove('text-success', 'text-danger');
+          message.classList.add('text-muted');
+          message.textContent = 'Please, be sure your URL is valid';
+        }, 5000);
+        break;
+      case 'notValid':
+        input.classList.remove('is-valid');
+        input.classList.add('is-invalid');
+        break;
+      case 'visited':
+        input.classList.remove('is-valid');
+        input.classList.add('is-invalid');
+        break;
+      case 'valid':
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+        break;
+
+      default:
+        throw new Error('Uknown condition');
+    }
+  });
   watch(state, 'inputUrl', () => (state.inputUrl === 'valid' ? submit.removeAttribute('disabled') : submit.setAttribute('disabled', 'disabled')));
   watch(state, 'requestState', () => {
     switch (state.requestState) {

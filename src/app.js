@@ -1,14 +1,12 @@
-import axios from 'axios';
 import { isURL } from 'validator';
 import watchJs from 'melanke-watchjs';
 import $ from 'jquery';
 import uniqid from 'uniqid';
 import _ from 'lodash';
 import { renderFeed, renderFeedList } from './render';
-import parseContent from './parser';
+import parse from './parser';
 
 const { watch } = watchJs;
-const proxy = 'https://cors-anywhere.herokuapp.com/';
 
 const app = () => {
   const input = document.getElementById('input');
@@ -62,9 +60,6 @@ const app = () => {
     state.inputUrl = name;
   };
 
-  const getDataFromUrl = feedUrl => axios(`${proxy}${feedUrl}`)
-    .then(res => parseContent(res.data));
-
   const updateRSSFeeds = () => {
     const keys = Object.keys(state.feedCollection);
     if (keys.length === 0) {
@@ -72,7 +67,7 @@ const app = () => {
     } else {
       keys.forEach((key) => {
         const { url, content } = state.feedCollection[key];
-        getDataFromUrl(url)
+        parse(url)
           .then((feed) => {
             const { articles } = feed;
             const updatedFeed = _.unionBy(articles, content.articles, 'guid');
@@ -93,7 +88,7 @@ const app = () => {
     const formData = new FormData(e.target);
     const feedUrl = formData.get('input');
     state.requestState = 'loading';
-    getDataFromUrl(feedUrl)
+    parse(feedUrl)
       .then((data) => {
         state.activeFeedId = uniqid();
         addFeed(state.activeFeedId, feedUrl, data);
@@ -181,6 +176,5 @@ const app = () => {
     state.modalDescription = text;
   });
 };
-
 
 export default app;

@@ -1,3 +1,7 @@
+import axios from 'axios';
+
+const proxy = 'https://cors-anywhere.herokuapp.com/';
+
 const parseFeedElements = (listOfElements, node, obj) => {
   const newObject = obj;
   listOfElements.forEach((element) => {
@@ -7,7 +11,7 @@ const parseFeedElements = (listOfElements, node, obj) => {
   return obj;
 };
 
-export default (data) => {
+const parseContent = (data) => {
   const parser = new DOMParser();
   const feedData = parser.parseFromString(data, 'text/xml');
   const newFeed = { articles: [] };
@@ -21,3 +25,6 @@ export default (data) => {
   });
   return newFeed;
 };
+
+export default feedUrl => axios(`${proxy}${feedUrl}`)
+  .then(res => parseContent(res.data));

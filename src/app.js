@@ -62,8 +62,8 @@ const app = () => {
     state.inputUrl = name;
   };
 
-  const updateMessage = () => {
-    switch (state.requestState) {
+  const updateMessage = (req) => {
+    switch (req) {
       case 'loading':
         message.textContent = 'Your feed is loading';
         message.classList.replace('text-muted', 'text-info');
@@ -71,12 +71,10 @@ const app = () => {
       case 'success':
         message.textContent = 'URL added to Feed List';
         message.classList.replace('text-info', 'text-success');
-        // input.value = '';
         break;
       case 'error':
         message.textContent = 'Something went wrong';
         message.classList.replace('text-info', 'text-danger');
-        // input.value = '';
         break;
       default:
         throw new Error('Uknown condition');
@@ -94,16 +92,13 @@ const app = () => {
         }, 5000);
         break;
       case 'notValid':
-        input.classList.remove('is-valid');
-        input.classList.add('is-invalid');
+        input.replace('is-valid', 'is-invalid');
         break;
       case 'visited':
-        input.classList.add('is-valid');
-        input.classList.add('is-invalid');
+        input.replace('is-valid', 'is-invalid');
         break;
       case 'valid':
-        input.classList.remove('is-invalid');
-        input.classList.add('is-valid');
+        input.replace('is-invalid', 'is-valid');
         break;
       default:
         throw new Error('Uknown condition');
@@ -117,7 +112,7 @@ const app = () => {
 
   const updateRSSFeeds = () => {
     const keys = Object.keys(state.feedCollection);
-    if (keys === 0) {
+    if (keys.length === 0) {
       setTimeout(updateRSSFeeds, 5000);
     } else {
       keys.forEach((key) => {
@@ -164,7 +159,7 @@ const app = () => {
 
   watch(state, 'inputUrl', updateInput);
   watch(state, 'inputUrl', updateDisable);
-  watch(state, 'requestState', updateMessage);
+  watch(state, 'requestState', updateMessage(state.requestState));
   watch(state, 'activeFeedId', () => renderFeed(state.activeFeedId, state.feedCollection));
   watch(state, 'activeFeedId', () => renderFeedList(state.feedCollection, state.activeFeedId));
   watch(state, 'modalDescription', () => $('body').find('.modal-body').text(state.modalDescription));

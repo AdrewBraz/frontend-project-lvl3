@@ -62,24 +62,24 @@ const app = () => {
     state.inputUrl = name;
   };
 
-  const updateMessage = () => {
-    switch (state.requestState) {
-      case 'loading':
-        message.textContent = 'Your feed is loading';
-        message.classList.replace('text-muted', 'text-info');
-        break;
-      case 'success':
-        message.textContent = 'URL added to Feed List';
-        message.classList.replace('text-info', 'text-success');
-        break;
-      case 'error':
-        message.textContent = 'Something went wrong';
-        message.classList.replace('text-info', 'text-danger');
-        break;
-      default:
-        throw new Error('Uknown condition');
-    }
-  };
+  // const updateMessage = () => {
+  //   switch (state.requestState) {
+  //     case 'loading':
+  //       message.textContent = 'Your feed is loading';
+  //       message.classList.replace('text-muted', 'text-info');
+  //       break;
+  //     case 'success':
+  //       message.textContent = 'URL added to Feed List';
+  //       message.classList.replace('text-info', 'text-success');
+  //       break;
+  //     case 'error':
+  //       message.textContent = 'Something went wrong';
+  //       message.classList.replace('text-info', 'text-danger');
+  //       break;
+  //     default:
+  //       throw new Error('Uknown condition');
+  //   }
+  // };
 
   const updateInput = () => {
     switch (state.inputUrl) {
@@ -161,7 +161,24 @@ const app = () => {
 
   watch(state, 'inputUrl', updateInput);
   watch(state, 'inputUrl', () => (state.inputUrl === 'valid' ? submit.removeAttribute('disabled') : submit.setAttribute('disabled', 'disabled')));
-  watch(state, 'requestState', updateMessage);
+  watch(state, 'requestState', () => {
+    switch (state.requestState) {
+      case 'loading':
+        message.textContent = 'Your feed is loading';
+        message.classList.replace('text-muted', 'text-info');
+        break;
+      case 'success':
+        message.textContent = 'URL added to Feed List';
+        message.classList.replace('text-info', 'text-success');
+        break;
+      case 'error':
+        message.textContent = 'Something went wrong';
+        message.classList.replace('text-info', 'text-danger');
+        break;
+      default:
+        throw new Error('Uknown condition');
+    }
+  });
   watch(state, 'activeFeedId', () => renderFeed(state.activeFeedId, state.feedCollection));
   watch(state, 'activeFeedId', () => renderFeedList(state.feedCollection, state.activeFeedId));
   watch(state, 'modalDescription', () => $('body').find('.modal-body').text(state.modalDescription));

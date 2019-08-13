@@ -62,8 +62,8 @@ const app = () => {
     state.inputUrl = name;
   };
 
-  const updateMessage = (req) => {
-    switch (req) {
+  const updateMessage = () => {
+    switch (state.requestState) {
       case 'loading':
         message.textContent = 'Your feed is loading';
         message.classList.replace('text-muted', 'text-info');
@@ -92,20 +92,22 @@ const app = () => {
         }, 5000);
         break;
       case 'notValid':
-        input.replace('is-valid', 'is-invalid');
+        input.classList.remove('is-valid');
+        input.classList.add('is-invalid');
         break;
       case 'visited':
-        input.replace('is-valid', 'is-invalid');
+        input.classList.remove('is-valid');
+        input.classList.add('is-invalid');
         break;
       case 'valid':
-        input.replace('is-invalid', 'is-valid');
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
         break;
+
       default:
         throw new Error('Uknown condition');
     }
   };
-
-  const updateDisable = () => (state.inputUrl === 'valid' ? submit.removeAttribute('disabled') : submit.setAttribute('disabled', 'disabled'));
 
   const getDataFromUrl = feedUrl => axios(`${proxy}${feedUrl}`)
     .then(res => parseContent(res.data));
@@ -158,8 +160,8 @@ const app = () => {
   setTimeout(updateRSSFeeds, 5000);
 
   watch(state, 'inputUrl', updateInput);
-  watch(state, 'inputUrl', updateDisable);
-  watch(state, 'requestState', updateMessage(state.requestState));
+  watch(state, 'inputUrl', () => (state.inputUrl === 'valid' ? submit.removeAttribute('disabled') : submit.setAttribute('disabled', 'disabled')));
+  watch(state, 'requestState', updateMessage);
   watch(state, 'activeFeedId', () => renderFeed(state.activeFeedId, state.feedCollection));
   watch(state, 'activeFeedId', () => renderFeedList(state.feedCollection, state.activeFeedId));
   watch(state, 'modalDescription', () => $('body').find('.modal-body').text(state.modalDescription));

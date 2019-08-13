@@ -8,7 +8,7 @@ import parse from './parser';
 
 const { watch } = watchJs;
 
-const app = () => {
+export default () => {
   const input = document.getElementById('input');
   const form = document.getElementById('rss-form');
   const feedListContainer = document.querySelector('.feedList');
@@ -60,10 +60,12 @@ const app = () => {
     state.inputUrl = name;
   };
 
+  const updateInterval = 5000;
+
   const updateRSSFeeds = () => {
     const keys = Object.keys(state.feedCollection);
     if (keys.length === 0) {
-      setTimeout(updateRSSFeeds, 5000);
+      setTimeout(updateRSSFeeds, updateInterval);
     } else {
       keys.forEach((key) => {
         const { url, content } = state.feedCollection[key];
@@ -77,7 +79,7 @@ const app = () => {
             console.error(err);
           })
           .finally(() => {
-            setTimeout(updateRSSFeeds, 5000);
+            setTimeout(updateRSSFeeds, updateInterval);
           });
       });
     }
@@ -105,7 +107,7 @@ const app = () => {
       });
   };
 
-  setTimeout(updateRSSFeeds, 5000);
+  setTimeout(updateRSSFeeds, updateInterval);
 
   watch(state, 'inputUrl', () => {
     switch (state.inputUrl) {
@@ -115,7 +117,7 @@ const app = () => {
           message.classList.remove('text-success', 'text-danger');
           message.classList.add('text-muted');
           message.textContent = 'Please, be sure your URL is valid';
-        }, 5000);
+        }, updateInterval);
         break;
       case 'notValid':
         input.classList.remove('is-valid');
@@ -176,5 +178,3 @@ const app = () => {
     state.modalDescription = text;
   });
 };
-
-export default app;

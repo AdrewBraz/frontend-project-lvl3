@@ -37,7 +37,7 @@ export default () => {
     return keys.find(({ url }) => url === newUrl);
   };
 
-  const updateUrl = (value) => {
+  const updateUrlState = (value) => {
     const urlList = [
       {
         name: 'empty',
@@ -161,7 +161,7 @@ export default () => {
 
   input.addEventListener('input', (e) => {
     const { value } = e.target;
-    updateUrl(value);
+    updateUrlState(value);
   });
 
   form.addEventListener('submit', (e) => {

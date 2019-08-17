@@ -1,4 +1,5 @@
 import { isURL } from 'validator';
+import axios from 'axios';
 import watchJs from 'melanke-watchjs';
 import $ from 'jquery';
 import uniqid from 'uniqid';
@@ -7,6 +8,7 @@ import { renderFeed, renderFeedList } from './render';
 import parse from './parser';
 
 const { watch } = watchJs;
+const proxy = 'https://cors-anywhere.herokuapp.com/';
 
 export default () => {
   const input = document.getElementById('input');
@@ -17,7 +19,7 @@ export default () => {
 
   const state = {
     feedCollection: {},
-    inputUrl: 'empty',
+    inputUrlState: 'empty',
     modalDescription: '',
     activeFeedId: '',
     requestState: null,
@@ -36,6 +38,9 @@ export default () => {
     const keys = Object.values(state.feedCollection);
     return keys.find(({ url }) => url === newUrl);
   };
+
+  const getDataFromUrl = feedUrl => axios(`${proxy}${feedUrl}`)
+    .then(res => parse(res.data));
 
   const updateUrlState = (value) => {
     const urlList = [
@@ -57,7 +62,7 @@ export default () => {
       },
     ];
     const { name } = urlList.find(({ check }) => check(value));
-    state.inputUrl = name;
+    state.inputUrlState = name;
   };
 
   const updateInterval = 5000;
@@ -69,7 +74,7 @@ export default () => {
     } else {
       keys.forEach((key) => {
         const { url, content } = state.feedCollection[key];
-        parse(url)
+        getDataFromUrl(url)
           .then((feed) => {
             const { articles } = feed;
             const updatedFeed = _.unionBy(articles, content.articles, 'guid');
@@ -90,7 +95,7 @@ export default () => {
     const formData = new FormData(e.target);
     const feedUrl = formData.get('input');
     state.requestState = 'loading';
-    parse(feedUrl)
+    getDataFromUrl(feedUrl)
       .then((data) => {
         state.activeFeedId = uniqid();
         addFeed(state.activeFeedId, feedUrl, data);
@@ -98,19 +103,17 @@ export default () => {
       })
       .catch((err) => {
         state.requestState = 'error';
-        e.target.reset();
         console.log(err);
       })
       .finally(() => {
-        state.inputUrl = 'empty';
-        e.target.reset();
+        state.inputUrlState = 'empty';
       });
   };
 
   setTimeout(updateRSSFeeds, updateInterval);
 
-  watch(state, 'inputUrl', () => {
-    switch (state.inputUrl) {
+  watch(state, 'inputUrlState', () => {
+    switch (state.inputUrlState) {
       case 'empty':
         input.classList.remove('is-valid', 'is-invalid');
         setTimeout(() => {
@@ -136,7 +139,7 @@ export default () => {
         throw new Error('Uknown condition');
     }
   });
-  watch(state, 'inputUrl', () => (state.inputUrl === 'valid' ? submit.removeAttribute('disabled') : submit.setAttribute('disabled', 'disabled')));
+  watch(state, 'inputUrlState', () => (state.inputUrlState === 'valid' ? submit.removeAttribute('disabled') : submit.setAttribute('disabled', 'disabled')));
   watch(state, 'requestState', () => {
     switch (state.requestState) {
       case 'loading':
@@ -146,10 +149,12 @@ export default () => {
       case 'success':
         message.textContent = 'URL added to Feed List';
         message.classList.replace('text-info', 'text-success');
+        form.reset();
         break;
       case 'error':
         message.textContent = 'Something went wrong';
         message.classList.replace('text-info', 'text-danger');
+        form.reset();
         break;
       default:
         throw new Error('Uknown condition');
@@ -164,9 +169,7 @@ export default () => {
     updateUrlState(value);
   });
 
-  form.addEventListener('submit', (e) => {
-    submitHandler(e);
-  });
+  form.addEventListener('submit', submitHandler);
 
   feedListContainer.addEventListener('click', (e) => {
     e.preventDefault();

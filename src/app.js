@@ -145,16 +145,21 @@ export default () => {
       case 'loading':
         message.textContent = 'Your feed is loading';
         message.classList.replace('text-muted', 'text-info');
+        input.setAttribute('disabled', 'disabled');
+        submit.setAttribute('disabled', 'disabled');
         break;
       case 'success':
         message.textContent = 'URL added to Feed List';
         message.classList.replace('text-info', 'text-success');
+        input.removeAttribute('disabled');
+        submit.removeAttribute('disabled');
         form.reset();
         break;
       case 'error':
         message.textContent = 'Something went wrong';
         message.classList.replace('text-info', 'text-danger');
-        form.reset();
+        input.removeAttribute('disabled');
+        submit.removeAttribute('disabled');
         break;
       default:
         throw new Error('Uknown condition');

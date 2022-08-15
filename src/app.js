@@ -8,7 +8,7 @@ import { renderFeed, renderFeedList } from './render';
 import parse from './parser';
 
 const { watch } = watchJs;
-const proxy = 'https://cors-anywhere.herokuapp.com/';
+const proxy = 'https://cors-anywhere./';
 
 export default () => {
   const input = document.getElementById('input');
@@ -39,8 +39,8 @@ export default () => {
     return keys.find(({ url }) => url === newUrl);
   };
 
-  const getDataFromUrl = feedUrl => axios(`${proxy}${feedUrl}`)
-    .then(res => parse(res.data));
+  const getDataFromUrl = feedUrl => axios(`${feedUrl}`)
+    .then(res => parse(res.data))
 
   const updateUrlState = (value) => {
     const urlList = [
@@ -74,6 +74,7 @@ export default () => {
     } else {
       keys.forEach((key) => {
         const { url, content } = state.feedCollection[key];
+        console.log(url)
         getDataFromUrl(url)
           .then((feed) => {
             const { articles } = feed;

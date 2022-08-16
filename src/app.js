@@ -40,7 +40,7 @@ export default () => {
   };
 
   const getDataFromUrl = feedUrl => axios(`${feedUrl}`)
-    .then(res => parse(res.data))
+    .then(res => parse(res.data));
 
   const updateUrlState = (value) => {
     const urlList = [
@@ -74,7 +74,7 @@ export default () => {
     } else {
       keys.forEach((key) => {
         const { url, content } = state.feedCollection[key];
-        console.log(url)
+        console.log(url);
         getDataFromUrl(url)
           .then((feed) => {
             const { articles } = feed;

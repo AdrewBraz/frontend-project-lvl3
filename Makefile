@@ -5,7 +5,7 @@ build:
 	npm run webpack
 
 lint:
-	npx eslint .
+	npx eslint . --fix
 
 publish:
 	npm publish --dry-run

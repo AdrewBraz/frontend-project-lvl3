@@ -4,7 +4,8 @@ const App = () => (
     <>
       <div className="jumbotron">
         <div className="form-group">
-            <h1>RSS Reader</h1>
+            <h1>RSS Reader super wonderfull
+            </h1>
         </div>
         <form id="rss-form">
             <div className="input-group flex-column mb-3">

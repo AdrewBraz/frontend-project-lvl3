@@ -2,11 +2,12 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+  target: 'web',
   mode: process.env.NODE_ENV || 'development',
   devServer: {
-    contentBase: path.join(__dirname, './dist'),
-    compress: true,
-    port: 9000,
+    static: {
+      directory: path.join(__dirname, './dist')
+    },
   },
   entry: [
     `${__dirname}/src/index.js`,

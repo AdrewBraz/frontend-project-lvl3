@@ -2,15 +2,18 @@
   "name": "rss-reader",
   "version": "1.0.0",
   "description": "Hexlet project #3",
-  "main": ".src/index.js",
+  "main": "dist/index.js",
+  "bin": {
+    "app": "dist/bin/app.js"
+  },
   "scripts": {
     "test": "jest",
     "eslint": "eslint",
     "webpack": "webpack",
     "build-server": "npx babel server --out-dir dist --source-maps inline",
-    "build-app": "npx webpack -p --env production",
+    "build-app": "npx webpack --env production",
     "build": "npm run build-app && npm run build-server",
-    "start": "babel-node ./server/bin/slack.js"
+    "start": "babel-node ./server/bin/app.js"
   },
   "files": [
     "dist"

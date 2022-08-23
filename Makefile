@@ -1,23 +1,27 @@
-install:
-	npm install
-
-
-lint:
-	npx eslint . --fix
-
-start-frontend:
-	npx webpack serve
-
-start-backend:
-	npx nodemon --exec npx babel-node server/bin/app.js
+install: install-deps
 
 start:
 	heroku local -f Procfile.dev
 
-publish:
-	npm publish --dry-run
+start-backend:
+	npx nodemon --exec npx babel-node server/bin/app.js
+
+start-frontend:
+	npx webpack -w
+
+install-deps:
+	npm install
 
 build:
-	rimraf dist
 	npm run build
 
+test:
+	npm test
+
+lint:
+	npx eslint . --ext js,jsx --fix
+
+publish:
+	npm publish
+
+.PHONY: test

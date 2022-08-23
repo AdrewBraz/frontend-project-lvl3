@@ -1,13 +1,16 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const isProduction = process.env.NODE_ENV === 'production';
+const isDevelopment = !isProduction;
+
 module.exports = {
   target: 'web',
   mode: process.env.NODE_ENV || 'development',
   devServer: {
     static: {
-      directory: path.join(__dirname, './dist')
-    },
+      directory: path.join( __dirname, 'assets'),
+    }
   },
   entry: [
     `${__dirname}/src/index.js`,
@@ -16,7 +19,8 @@ module.exports = {
     extensions: ['.js', '.jsx'],
   },
   output: {
-    path: `${__dirname}/dist/`,
+    path: `${__dirname}/dist/public`,
+    publicPath: '/assets/',
   },
   module: {
     rules: [
@@ -26,7 +30,9 @@ module.exports = {
       },
       {
         test: /\.jsx?$/,
-        loader: 'babel-loader',
+        use: {
+          loader: 'babel-loader'
+        },
         exclude: /node_modules/,
       },
     ],

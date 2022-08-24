@@ -1,9 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export const feedSlice = createSlice({
+const feedSlice = createSlice({
     name: 'feedSlice',
-    initialState: {},
-    reducers: {}
+    initialState: [],
+    reducers: {
+        addFeed(state, { payload }){
+            state.push(payload)
+        }
+    }
 })
+
+export const { addFeed } = feedSlice.actions;
 
 export default feedSlice.reducer

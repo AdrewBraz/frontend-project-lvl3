@@ -1,4 +1,5 @@
 import React from 'react';
+import Form from './Form'
 
 const App = () => (
     <>
@@ -7,19 +8,7 @@ const App = () => (
             <h1>RSS reader
             </h1>
         </div>
-        <form id="rss-form">
-            <div className="input-group flex-column mb-3">
-                <div className="input-group">
-                    <div className="input-group-prepend">
-                        <button type="submit" className="btn btn-primary" id="submit-btn" disabled="disabled">Add Feed</button>
-                    </div>
-                    <input type="text" name="input" className="form-control" id="input" placeholder="url" aria-label="url"/>
-                    </div>
-                <small id="message" className="form-text text-muted">
-                    Please, be sure your URL is valid
-                </small>
-            </div>
-        </form>
+        <Form />
     </div>
       <div className="container">
             <div className="row">

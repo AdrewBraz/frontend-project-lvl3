@@ -10,10 +10,10 @@ const Form = () => {
     const generateOnSubmit = () => async (values) => {
         const { url } = values;
         dispatch(actions.addFeed({url}))
-        // const data =  await axios.get(url).then(data => {
-        //     console.log(data)
-        //     return data
-        // })
+        const data =  await axios.get(`/rss?url=${url}`).then(data => {
+            console.log(data)
+            return data
+        })
     }
     
 

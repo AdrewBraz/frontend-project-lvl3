@@ -13,7 +13,7 @@ export default (data) => {
   const parser =  new XMLParser();
   const feedData = parser.parse(data);
   const { rss } = feedData;
-  console.log(rss.channel.item)
+  // console.log(rss.channel.item)
   // const newFeed = { articles: [] };
   // const elementList = ['title', 'description', 'link'];
   // const articleList = feedData.querySelectorAll('item');

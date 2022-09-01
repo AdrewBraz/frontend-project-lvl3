@@ -1,27 +1,23 @@
 const https = require('https');
 
-var postData = JSON.stringify({});
+const getToken = (requestOptions, postData) => {
+  const rss = https.request(requestOptions, (res) => {
+    console.log('statusCode:', res.statusCode);
+    console.log('headers:', res.headers);
+  
+    res.on('data', (d) => {
+      const response = JSON.parse(d.toString('utf-8'))
+      const { key } = response.data.attributes
+      process.env.TOKEN = key;
+      console.log(process.env.TOKEN)
+    });
+  })
+  rss.on('error', (err) => {
+    console.log(err)
+  })
+  rss.write(postData)
+  rss.end()
+}
 
-var options = {
-  hostname: 'datorss.com',
-  port: 443,
-  path: '/api/tokens',
-  method: 'POST',
-  headers: {
-       'Content-Type': 'application/x-www-form-urlencoded',
-       'Content-Length': postData.length
-     }
-};
-
-const rss = https.request(options, (res) => {
-  console.log('statusCode:', res.statusCode);
-  console.log('headers:', res.headers);
-
-  res.on('data', (d) => {
-    console.log(d)
-    process.stdout.write(d);
-  });
-});
-
-export default rss;
+export default getToken;
 

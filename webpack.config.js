@@ -14,10 +14,10 @@ module.exports = {
     port: 9000
   },
   entry: [
-    `${__dirname}/src/index.js`,
+    `${__dirname}/src/index.tsx`,
   ],
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.tsx','.js', '.jsx'],
   },
   output: {
     path: `${__dirname}/dist/public`,
@@ -30,7 +30,7 @@ module.exports = {
         use: ['style-loader', 'css-loader'],
       },
       {
-        test: /\.jsx?$/,
+        test: /\.tsx?$/,
         use: {
           loader: 'babel-loader'
         },

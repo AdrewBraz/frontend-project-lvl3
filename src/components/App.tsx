@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { FC } from 'react';
 import Form from './Form'
 
-const App = () => (
-    <>
+const App: FC = () => (
+    <div>
       <div className="jumbotron">
         <div className="form-group">
             <h1>RSS reader
@@ -32,7 +32,7 @@ const App = () => (
                 </div>
             </div>
         </div>
-    </>
+    </div>
 )
 
 export default App;

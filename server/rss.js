@@ -6,10 +6,12 @@ const getToken = (requestOptions, postData) => {
     console.log('headers:', res.headers);
   
     res.on('data', (d) => {
-      const response = JSON.parse(d.toString('utf-8'))
-      const { key } = response.data.attributes
-      process.env.TOKEN = key;
-      console.log(process.env.TOKEN)
+      console.log(d)
+      const response = d.toString('utf-8')
+      console.log(response)
+      // const { key } = response.data.attributes
+      // process.env.TOKEN = key;
+      // console.log(process.env.TOKEN)
     });
   })
   rss.on('error', (err) => {

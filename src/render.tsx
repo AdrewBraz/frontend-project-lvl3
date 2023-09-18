@@ -1,5 +1,5 @@
-const feedListContainer = document.querySelector('.feedList');
-const feedContainer = document.querySelector('.feed');
+const feedListContainer = document.querySelector('.feedList') as HTMLUListElement
+const feedContainer = document.querySelector('.feed') as HTMLDivElement
 
 export const renderFeedList = (coll, activeId) => {
   const keys = Object.keys(coll);

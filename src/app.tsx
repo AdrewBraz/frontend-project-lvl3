@@ -3,66 +3,92 @@ import axios from 'axios';
 import watchJs from 'melanke-watchjs';
 import $ from 'jquery';
 import uniqid from 'uniqid';
-import _ from 'lodash';
 import { renderFeed, renderFeedList } from './render';
-import parse from './parser';
+import { XMLParser } from 'fast-xml-parser';
 
 const { watch } = watchJs;
-const proxy = 'https://cors-anywhere./';
+const proxy = 'https://cors-anywhere/';
+const parser = new XMLParser()
 
 export default () => {
-  const input = document.getElementById('input');
-  const form = document.getElementById('rss-form');
-  const feedListContainer = document.querySelector('.feedList');
-  const message = document.getElementById('message');
-  const submit = document.getElementById('submit-btn');
+  const input = document.getElementById('input') as HTMLInputElement
+  const form = document.getElementById('rss-form') as HTMLFormElement
+  const feedListContainer = document.querySelector('.feedList')  as HTMLUListElement
+  const message = document.getElementById('message') as HTMLDivElement
+  const submit = document.getElementById('submit-btn') as HTMLButtonElement
 
-  const state = {
-    feedCollection: {},
+interface IContent{
+  title: string,
+  description: string,
+  url: string,
+  guid: string
+}
+
+interface IFeed {
+  url: string,
+  content: IContent,
+  title: string
+}
+
+interface State {
+  feedCollection: IFeed,
+  inputUrlState: string,
+  modalDescription: string,
+  activeFeedId: string,
+  requestState: string
+}
+
+  const state: State = {
+    feedCollection: {} as IFeed,
     inputUrlState: 'empty',
     modalDescription: '',
     activeFeedId: '',
-    requestState: null,
+    requestState: '',
   };
 
-  const addFeed = (id, url, content) => {
-    state.feedCollection[id] = { url, content, title: content.title };
+  const addFeed = (id: number, url: string, content: IContent): void => {
+    state.feedCollection[id] = { url, content, title:  content.title};
   };
 
-  const updateFeed = (id, updatedArticles) => {
+  const updateFeed = (id: number, updatedArticles: string[]): void => {
     const { content } = state.feedCollection[id];
     content.articles = updatedArticles;
   };
 
-  const isVisitedUrl = (newUrl) => {
+  const isVisitedUrl = (newUrl: string) => {
     const keys = Object.values(state.feedCollection);
     return keys.find(({ url }) => url === newUrl);
   };
 
-  const getDataFromUrl = feedUrl => axios(`${feedUrl}`)
-    .then(res => parse(res.data));
+  const getDataFromUrl = (feedUrl: string) => axios.get<IFeed>(`${proxy}${feedUrl}`)
+    .then(res => parser.parse(res.data));
 
-  const updateUrlState = (value) => {
-    const urlList = [
+  const updateUrlState = (value: string) => {
+    interface IUrlList {
+      name: any;
+      check: (url: string) => string | boolean
+    }
+
+    const urlList: IUrlList[] = [
       {
         name: 'empty',
-        check: url => url === '',
+        check: (url: string): boolean => url === '',
       },
       {
         name: 'notValid',
-        check: url => !isURL(url),
+        check: (url: string): boolean => !isURL(url),
       },
       {
         name: 'visited',
-        check: url => isVisitedUrl(url),
+        check: (url: string): boolean => isVisitedUrl(url),
       },
       {
         name: 'valid',
-        check: url => url,
+        check: (url: string): string => url,
       },
     ];
-    const { name } = urlList.find(({ check }) => check(value));
-    state.inputUrlState = name;
+    const result = urlList.find(({ check }) => check(value));
+    state.inputUrlState = result?.name;
   };
 
   const updateInterval = 5000;

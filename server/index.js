@@ -26,18 +26,20 @@ app.use(express.static('dist/public'))
 app.use(cors())
 
 app.get('/', (req, res) => {
+    console.log('htis')
     const postData = JSON.stringify({})
     const {auth} = routes(postData)
-    getToken(auth, JSON.stringify({}))
+    // getToken(auth, JSON.stringify({}))
     res.render('index', { title: 'RSS FEED'})
 })
 
 app.get('/rss*', async (req, res) => {
     console.log(process.env.TOKEN)
     const { url } = req.query
-    await axios.get(url).then(response => {
-        parser(response.data)
+    const data = await axios.get(url).then(response => {
+        return parser(response.data)
     })
+    console.log(data)
     res.send({status: "something"})
 })
 

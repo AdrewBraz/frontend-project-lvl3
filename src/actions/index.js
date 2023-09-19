@@ -1,5 +1,7 @@
-import { addFeed } from "../reducers/feedSlice";
+import { feedFetching, fetchingError, fetchingSuccess } from "../reducers/feedSlice";
 
 export default {
-    addFeed
+    feedFetching,
+    fetchingError,
+    fetchingSuccess
 }

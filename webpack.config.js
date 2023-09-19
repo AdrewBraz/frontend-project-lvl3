@@ -17,7 +17,7 @@ module.exports = {
     `${__dirname}/src/index.tsx`,
   ],
   resolve: {
-    extensions: ['.tsx','.js', '.jsx'],
+    extensions: ['.ts', '.tsx','.js', '.jsx'],
   },
   output: {
     path: `${__dirname}/dist/public`,

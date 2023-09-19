@@ -1,7 +1,11 @@
 import React, { FC } from 'react';
 import Form from './Form'
+import { useTypedSelector } from '../hooks/useTypeSelector';
+import { renderFeed } from '../render';
 
-const App: FC = () => (
+const App: FC = () => {
+  const { feed } = useTypedSelector(state => state.feedState)
+  return (
     <div>
       <div className="jumbotron">
         <div className="form-group">
@@ -10,10 +14,12 @@ const App: FC = () => (
         </div>
         <Form />
     </div>
-      <div className="container">
+      <div className="container" id='app'>
             <div className="row">
                 <div className="col-sm-3 feedList"></div>
-                <div className="col-sm-9 feed"></div>
+                <div className="col-sm-9 feed">
+                   { feed.length > 0  ? renderFeed(feed) : null}
+                </div>
             </div>
         </div><div className="modal fade" id="myModal" tabIndex="-1" role="dialog" aria-labelledby="myModalTitle" aria-hidden="true">
             <div className="modal-dialog modal-dialog-centered" role="document">
@@ -34,5 +40,6 @@ const App: FC = () => (
         </div>
     </div>
 )
+  }
 
 export default App;

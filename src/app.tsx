@@ -21,13 +21,23 @@ interface IContent{
   title: string,
   description: string,
   url: string,
-  guid: string
+  guid: string,
+  link: string,
+  pubDate: string
+}
+
+interface IImage{
+  url: string,
+  width: number,
+  height: number,
 }
 
 interface IFeed {
+  title: string,
+  description: string,
   url: string,
-  content: IContent,
-  title: string
+  image: IImage
+  articles: IContent,
 }
 
 interface State {
@@ -46,8 +56,8 @@ interface State {
     requestState: '',
   };
 
-  const addFeed = (id: number, url: string, content: IContent): void => {
-    state.feedCollection[id] = { url, content, title:  content.title};
+  const addFeed = (id: number, url: string, articles: IContent): void => {
+    state.feedCollection[id] = { url, articles, title:  articles.title};
   };
 
   const updateFeed = (id: number, updatedArticles: string[]): void => {
@@ -65,7 +75,7 @@ interface State {
 
   const updateUrlState = (value: string) => {
     interface IUrlList {
-      name: any;
+      name: string;
       check: (url: string) => string | boolean
     }
 
@@ -93,7 +103,7 @@ interface State {
 
   const updateInterval = 5000;
 
-  const updateRSSFeeds = () => {
+  const updateRSSFeeds = (): void => {
     const keys = Object.keys(state.feedCollection);
     if (keys.length === 0) {
       setTimeout(updateRSSFeeds, updateInterval);
@@ -121,6 +131,7 @@ interface State {
     e.preventDefault();
     const formData = new FormData(e.target);
     const feedUrl = formData.get('input');
+    console.log(feedUrl)
     state.requestState = 'loading';
     getDataFromUrl(feedUrl)
       .then((data) => {
@@ -139,62 +150,62 @@ interface State {
 
   setTimeout(updateRSSFeeds, updateInterval);
 
-  watch(state, 'inputUrlState', () => {
-    switch (state.inputUrlState) {
-      case 'empty':
-        input.classList.remove('is-valid', 'is-invalid');
-        setTimeout(() => {
-          message.classList.remove('text-success', 'text-danger');
-          message.classList.add('text-muted');
-          message.textContent = 'Please, be sure your URL is valid';
-        }, updateInterval);
-        break;
-      case 'notValid':
-        input.classList.remove('is-valid');
-        input.classList.add('is-invalid');
-        break;
-      case 'visited':
-        input.classList.remove('is-valid');
-        input.classList.add('is-invalid');
-        break;
-      case 'valid':
-        input.classList.remove('is-invalid');
-        input.classList.add('is-valid');
-        break;
+  // watch(state, 'inputUrlState', () => {
+  //   switch (state.inputUrlState) {
+  //     case 'empty':
+  //       input.classList.remove('is-valid', 'is-invalid');
+  //       setTimeout(() => {
+  //         message.classList.remove('text-success', 'text-danger');
+  //         message.classList.add('text-muted');
+  //         message.textContent = 'Please, be sure your URL is valid';
+  //       }, updateInterval);
+  //       break;
+  //     case 'notValid':
+  //       input.classList.remove('is-valid');
+  //       input.classList.add('is-invalid');
+  //       break;
+  //     case 'visited':
+  //       input.classList.remove('is-valid');
+  //       input.classList.add('is-invalid');
+  //       break;
+  //     case 'valid':
+  //       input.classList.remove('is-invalid');
+  //       input.classList.add('is-valid');
+  //       break;
 
-      default:
-        throw new Error('Uknown condition');
-    }
-  });
-  watch(state, 'inputUrlState', () => (state.inputUrlState === 'valid' ? submit.removeAttribute('disabled') : submit.setAttribute('disabled', 'disabled')));
-  watch(state, 'requestState', () => {
-    switch (state.requestState) {
-      case 'loading':
-        message.textContent = 'Your feed is loading';
-        message.classList.replace('text-muted', 'text-info');
-        input.setAttribute('disabled', 'disabled');
-        submit.setAttribute('disabled', 'disabled');
-        break;
-      case 'success':
-        message.textContent = 'URL added to Feed List';
-        message.classList.replace('text-info', 'text-success');
-        input.removeAttribute('disabled');
-        submit.removeAttribute('disabled');
-        form.reset();
-        break;
-      case 'error':
-        message.textContent = 'Something went wrong';
-        message.classList.replace('text-info', 'text-danger');
-        input.removeAttribute('disabled');
-        submit.removeAttribute('disabled');
-        break;
-      default:
-        throw new Error('Uknown condition');
-    }
-  });
-  watch(state, 'activeFeedId', () => renderFeed(state.activeFeedId, state.feedCollection));
-  watch(state, 'activeFeedId', () => renderFeedList(state.feedCollection, state.activeFeedId));
-  watch(state, 'modalDescription', () => $('body').find('.modal-body').text(state.modalDescription));
+  //     default:
+  //       throw new Error('Uknown condition');
+  //   }
+  // });
+  // watch(state, 'inputUrlState', () => (state.inputUrlState === 'valid' ? submit.removeAttribute('disabled') : submit.setAttribute('disabled', 'disabled')));
+  // watch(state, 'requestState', () => {
+  //   switch (state.requestState) {
+  //     case 'loading':
+  //       message.textContent = 'Your feed is loading';
+  //       message.classList.replace('text-muted', 'text-info');
+  //       input.setAttribute('disabled', 'disabled');
+  //       submit.setAttribute('disabled', 'disabled');
+  //       break;
+  //     case 'success':
+  //       message.textContent = 'URL added to Feed List';
+  //       message.classList.replace('text-info', 'text-success');
+  //       input.removeAttribute('disabled');
+  //       submit.removeAttribute('disabled');
+  //       form.reset();
+  //       break;
+  //     case 'error':
+  //       message.textContent = 'Something went wrong';
+  //       message.classList.replace('text-info', 'text-danger');
+  //       input.removeAttribute('disabled');
+  //       submit.removeAttribute('disabled');
+  //       break;
+  //     default:
+  //       throw new Error('Uknown condition');
+  //   }
+  // });
+  // watch(state, 'activeFeedId', () => renderFeed(state.activeFeedId, state.feedCollection));
+  // watch(state, 'activeFeedId', () => renderFeedList(state.feedCollection, state.activeFeedId));
+  // watch(state, 'modalDescription', () => $('body').find('.modal-body').text(state.modalDescription));
 
   input.addEventListener('input', (e) => {
     const { value } = e.target;

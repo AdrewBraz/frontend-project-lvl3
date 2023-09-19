@@ -1,19 +1,29 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../hooks/AppDispatch';
 import { useFormik } from 'formik';
 import actions from '../actions';
 import axios from 'axios'
+import { IFeed } from '../types'
+
 
 const Form = () => {
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch();
+
 
     const generateOnSubmit = () => async (values) => {
         const { url } = values;
-        dispatch(actions.addFeed({url}))
-        const data =  await axios.get(`/rss?url=${url}`).then(data => {
-            console.log(data)
-            return data
-        })
+        console.log(url)
+        try {
+            dispatch(actions.feedFetching())
+            const {data} =  await axios.get<IFeed []>(`/rss?url=${url}`).then(data => {
+                console.log(data)
+                return data
+            })
+            dispatch(actions.fetchingSuccess(data))
+        } catch(e){
+            dispatch(actions.fetchingError(e.message))
+        }
+        
     }
     
 

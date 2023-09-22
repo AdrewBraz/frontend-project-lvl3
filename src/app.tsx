@@ -17,29 +17,6 @@ export default () => {
   const message = document.getElementById('message') as HTMLDivElement
   const submit = document.getElementById('submit-btn') as HTMLButtonElement
 
-interface IContent{
-  title: string,
-  description: string,
-  url: string,
-  guid: string,
-  link: string,
-  pubDate: string
-}
-
-interface IImage{
-  url: string,
-  width: number,
-  height: number,
-}
-
-interface IFeed {
-  title: string,
-  description: string,
-  url: string,
-  image: IImage
-  articles: IContent,
-}
-
 interface State {
   feedCollection: IFeed,
   inputUrlState: string,

@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
     res.render('index', { title: 'RSS FEED'})
 })
 
-app.get('/rss*', async (req, res) => {
+app.get('/api/*', async (req, res) => {
     const { url } = req.query
     console.log(url)
     const data = await axios.get(url).then(response => {

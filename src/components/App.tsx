@@ -1,7 +1,9 @@
 import React, { FC } from 'react';
 import Form from './Form'
 import { useTypedSelector } from '../hooks/useTypeSelector';
-import { renderFeed } from '../render';
+import Feed from '../render';
+import { IFeed } from '../types'
+
 
 const App: FC = () => {
   const { feed } = useTypedSelector(state => state.feedState)
@@ -18,7 +20,7 @@ const App: FC = () => {
             <div className="row">
                 <div className="col-sm-3 feedList"></div>
                 <div className="col-sm-9 feed">
-                   { feed.length > 0  ? renderFeed(feed) : null}
+                   { feed.length > 0  ? <Feed feed={feed[0]}/> : null}
                 </div>
             </div>
         </div><div className="modal fade" id="myModal" tabIndex="-1" role="dialog" aria-labelledby="myModalTitle" aria-hidden="true">

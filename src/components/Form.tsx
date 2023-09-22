@@ -1,9 +1,8 @@
 import React from 'react';
 import { useAppDispatch } from '../hooks/AppDispatch';
 import { useFormik } from 'formik';
-import actions from '../actions';
-import axios from 'axios'
-import { IFeed } from '../types'
+import { fetchFeed } from '../reducers/feedSlice';
+
 
 
 const Form = () => {
@@ -12,17 +11,7 @@ const Form = () => {
 
     const generateOnSubmit = () => async (values) => {
         const { url } = values;
-        console.log(url)
-        try {
-            dispatch(actions.feedFetching())
-            const {data} =  await axios.get<IFeed []>(`/rss?url=${url}`).then(data => {
-                console.log(data)
-                return data
-            })
-            dispatch(actions.fetchingSuccess(data))
-        } catch(e){
-            dispatch(actions.fetchingError(e.message))
-        }
+        dispatch(fetchFeed(url))
         
     }
     

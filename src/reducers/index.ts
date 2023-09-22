@@ -1,5 +1,4 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { type } from 'os';
 import feedState from './feedSlice'
 
 export const RootReducer =  combineReducers({

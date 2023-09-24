@@ -1,7 +1,6 @@
-import { feedFetching, fetchingError, fetchingSuccess } from "../reducers/feedSlice";
+import { subscribetoFeed, switchActiveFeed} from "../reducers/listSlice";
 
 export default {
-    feedFetching,
-    fetchingError,
-    fetchingSuccess
+    subscribetoFeed,
+    switchActiveFeed
 }

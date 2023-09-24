@@ -12,11 +12,19 @@ export interface IImage{
   width: number,
   height: number,
 }
+
+export interface ListItem{
+  title: string,
+  image: IImage,
+  id: string,
+  link: string
+}
   
 export interface IFeed {
   title: string,
   description: string,
-  url: string,
+  link: string,
   image: IImage
-  articles: IContent,
+  articles: IContent[],
+  id: string
 }

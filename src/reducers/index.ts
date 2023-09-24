@@ -1,8 +1,10 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import feedState from './feedSlice'
+import listSlice from './listSlice';
 
 export const RootReducer =  combineReducers({
-  feedState
+  feedState,
+  listSlice
 }) 
 
 export const  setStore = () => {

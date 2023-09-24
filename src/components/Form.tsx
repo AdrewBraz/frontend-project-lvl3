@@ -9,10 +9,10 @@ const Form = () => {
     const dispatch = useAppDispatch();
 
 
-    const generateOnSubmit = () => async (values) => {
+    const generateOnSubmit = () => async (values, {resetForm}) => {
         const { url } = values;
         dispatch(fetchFeed(url))
-        
+        resetForm()
     }
     
 

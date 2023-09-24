@@ -3,7 +3,6 @@ import axios from 'axios';
 import watchJs from 'melanke-watchjs';
 import $ from 'jquery';
 import uniqid from 'uniqid';
-import { renderFeed, renderFeedList } from './render';
 import { XMLParser } from 'fast-xml-parser';
 
 const { watch } = watchJs;

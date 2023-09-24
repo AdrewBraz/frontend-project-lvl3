@@ -25,15 +25,15 @@ const feedSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: {
-        [fetchFeed.pending.type]:( state, action: PayloadAction<IFeed []>) =>{
+        [fetchFeed.pending.type]:( state, action: PayloadAction<string>) =>{
             state.isLoading = true;
         },
-        [fetchFeed.fulfilled.type]:( state, action: PayloadAction<IFeed []>) =>{
+        [fetchFeed.fulfilled.type]:( state, action: PayloadAction<IFeed>) =>{
             state.isLoading = false;
             state.feed.push(action.payload)
             state.error = ''
         },
-        [fetchFeed.rejected.type]:( state, action: PayloadAction<IFeed []>) =>{
+        [fetchFeed.rejected.type]:( state, action: PayloadAction<string>) =>{
             state.isLoading = false;
             state.error = action.payload
         },

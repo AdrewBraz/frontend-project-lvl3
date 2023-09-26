@@ -8,6 +8,7 @@ import { IFeed } from '../types';
 const App: FC = () => {
   const { feed } = useTypedSelector(state => state.feedState);
   const { list, activeId } = useTypedSelector(state => state.listSlice)
+  console.log(list, feed)
   
   const getFeed = () => {
     if(activeId){

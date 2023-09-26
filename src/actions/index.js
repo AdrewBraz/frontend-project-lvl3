@@ -1,6 +1,7 @@
-import { subscribetoFeed, switchActiveFeed} from "../reducers/listSlice";
+import { subscribetoFeed, unSubscribefromFeed, switchActiveFeed} from "../reducers/listSlice";
 
 export default {
     subscribetoFeed,
-    switchActiveFeed
+    switchActiveFeed,
+    unSubscribefromFeed
 }

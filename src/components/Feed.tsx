@@ -34,9 +34,9 @@ const Feed: FC<Props> = (props: Props) => {
 
   const feedArticles = articles.map( (article:IContent ) => { 
       return (
-        <div>
+        <div key={`${article.guid}`}>
           <Accordion>
-          <Accordion.Item key={`${article.guid}`} eventKey="0">
+          <Accordion.Item eventKey="0">
             <Accordion.Header>{article.title}</Accordion.Header>
             <Accordion.Body>
               <p>{article.description}</p>

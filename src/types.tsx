@@ -17,7 +17,8 @@ export interface ListItem{
   title: string,
   image: IImage,
   id: string,
-  link: string
+  link: string,
+  url: string,
 }
   
 export interface IFeed {
@@ -26,5 +27,6 @@ export interface IFeed {
   link: string,
   image: IImage
   articles: IContent[],
-  id: string
+  id: string, 
+  url: string
 }

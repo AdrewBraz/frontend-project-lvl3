@@ -14,29 +14,28 @@ const Feed: FC<Props> = (props: Props) => {
   const dispatch = useAppDispatch()
   const {list} = useTypedSelector(state => state.listSlice)
 
-  const { link, articles, title, description, id, image } = props.feed;
+  const { link, articles, title, description, id, image, url } = props.feed;
 
   const subscribeHandler = () => {
     const obj: ListItem = {
       title,
       image,
       link,
-      id
+      id, 
+      url
     }
     const isExsist = list.some((item: ListItem) => item.link === obj.link)
     if(!isExsist){
       dispatch(actions.subscribetoFeed(obj))
     }
 
-    console.log('allready here')
-
   }
 
   const feedArticles = articles.map( (article:IContent ) => { 
       return (
-        <div>
+        <div key={`${article.guid}`}>
           <Accordion>
-          <Accordion.Item key={`${article.guid}`} eventKey="0">
+          <Accordion.Item eventKey="0">
             <Accordion.Header>{article.title}</Accordion.Header>
             <Accordion.Body>
               <p>{article.description}</p>

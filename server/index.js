@@ -19,6 +19,18 @@ app.get('/', (req, res) => {
     res.render('index', { title: 'RSS FEED'})
 })
 
+app.get('/api/pooling/*', async (req, res) => {
+    const { url } = req.query
+    const id = uuidv4()
+    console.log(url)
+    setTimeout(async() => {
+        const data = await axios.get(url).then(response => {
+            return parser(response.data)
+        })
+        res.send({...data, id, url })
+    }, 5000)
+})
+
 app.get('/api/*', async (req, res) => {
     const { url } = req.query
     const id = uuidv4()
@@ -26,7 +38,7 @@ app.get('/api/*', async (req, res) => {
     const data = await axios.get(url).then(response => {
         return parser(response.data)
     })
-    res.send({...data, id})
+    res.send({...data, id, url })
 })
 
-export default app
+export default app  

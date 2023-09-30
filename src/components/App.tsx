@@ -1,13 +1,20 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import Form from './Form'
 import { useTypedSelector } from '../hooks/useTypeSelector';
 import Feed from './Feed';
 import FeedList from './FeedList';
-import { IFeed } from '../types';
+import { IFeed, ListItem } from '../types';
+import { fetch} from '../reducers/feedSlice';
+import { useAppDispatch } from '../hooks/AppDispatch';
+import { longPooling } from '../reducers/feedSlice';
+
+
 
 const App: FC = () => {
   const { feed } = useTypedSelector(state => state.feedState);
   const { list, activeId } = useTypedSelector(state => state.listSlice)
+  const dispatch = useAppDispatch();
+
   
   const getFeed = () => {
     if(activeId){
@@ -17,6 +24,14 @@ const App: FC = () => {
     return feed[feed.length - 1]
   }
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+        for(const item of list ){
+            dispatch(longPooling(item.url))
+          }
+      }, 5000);
+      return () => clearInterval(interval);
+  }, [list])
 
   return (
     <div>

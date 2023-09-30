@@ -4,10 +4,8 @@ import { useTypedSelector } from '../hooks/useTypeSelector';
 import Feed from './Feed';
 import FeedList from './FeedList';
 import { IFeed, ListItem } from '../types';
-import { fetch} from '../reducers/feedSlice';
+import { longPooling} from '../reducers/feedSlice';
 import { useAppDispatch } from '../hooks/AppDispatch';
-import { longPooling } from '../reducers/feedSlice';
-
 
 
 const App: FC = () => {

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { IFeed, IContent } from '../types'
+import { unSubscribefromFeed } from "./listSlice";
 
 import axios from "axios";
 
@@ -48,20 +49,23 @@ const feedSlice = createSlice({
             state.feed.push(action.payload)
         }
     },
-    extraReducers: {
-        [fetchFeed.pending.type]:( state, action: PayloadAction<string>) =>{
-            state.isLoading = true;
-        },
-        [fetchFeed.fulfilled.type]:( state, action: PayloadAction<IFeed>) =>{
-            state.isLoading = false;
+    extraReducers: (builder) =>{
+        builder.addCase(fetchFeed.pending.type, (state, action: PayloadAction<IFeed>) => {
+            state.isLoading = false
             state.feed.push(action.payload)
-            state.error = ''
-        },
-        [fetchFeed.rejected.type]:( state, action: PayloadAction<string>) =>{
-            state.isLoading = false;
-            state.error = action.payload
-        },
+        })
+        builder.addCase(fetchFeed.fulfilled.type, (state, action: PayloadAction<IFeed>) => {
+            state.isLoading = false
+            state.feed.push(action.payload)
+        })
+        builder.addCase(fetchFeed.rejected.type, (state, action: PayloadAction<string>) => {
+            return state
+        })
+        builder.addCase(unSubscribefromFeed, (state, action: PayloadAction<string>) => {
+            return {feed: state.feed.filter((item) => item.id !== action.payload), isLoading: false, error: ''}
+        })
     }
+    
 })
 
-export default feedSlice.reducer
+export default feedSlice.reducer;

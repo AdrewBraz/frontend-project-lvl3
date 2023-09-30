@@ -21,10 +21,14 @@ const listSlice = createSlice({
         },
         switchActiveFeed(state, action: PayloadAction<string>){
             state.activeId = action.payload
-        }
+        },
+        unSubscribefromFeed(state, action: PayloadAction<string>){
+            const newState = { activeId: '', list: state.list.filter(item => item.id !== action.payload)}
+            return newState
+        },
     },
 })
 
-export const {subscribetoFeed, switchActiveFeed} = listSlice.actions
+export const {subscribetoFeed, switchActiveFeed, unSubscribefromFeed} = listSlice.actions
 
 export default listSlice.reducer

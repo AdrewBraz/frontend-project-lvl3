@@ -22,13 +22,14 @@ app.get('/', (req, res) => {
 app.get('/api/pooling/*', async (req, res) => {
     const { url } = req.query
     const id = uuidv4()
-    console.log(url)
+    console.log(url, 'pooling')
     setTimeout(async() => {
         const data = await axios.get(url).then(response => {
             return parser(response.data)
         })
+        console.log('time to answer')
         res.send({...data, id, url })
-    }, 5000)
+    }, 50000)
 })
 
 app.get('/api/*', async (req, res) => {
@@ -38,7 +39,7 @@ app.get('/api/*', async (req, res) => {
     const data = await axios.get(url).then(response => {
         return parser(response.data)
     })
-    res.send({...data, id, url })
+    res.send({...data, id, url, diff: 0 })
 })
 
 export default app  

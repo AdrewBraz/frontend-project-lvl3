@@ -28,5 +28,6 @@ export interface IFeed {
   image: IImage
   articles: IContent[],
   id: string, 
-  url: string
+  url: string,
+  diff: number
 }

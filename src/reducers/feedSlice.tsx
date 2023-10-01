@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { IFeed, IContent } from '../types'
 import { unSubscribefromFeed } from "./listSlice";
+import { RootState } from "./index";
 
 import axios from "axios";
 
@@ -30,11 +31,14 @@ export const longPooling = createAsyncThunk(
     'feedSlice/Pooling',
      async(url: string, thunkApi) => {
         const newFeed = await fetch('/api/pooling/?url=',url)
-        const state = thunkApi.getState() as initialState
-        const articles = state.feed.find((item: IFeed) => item.url === url)
+        const state = thunkApi.getState() as RootState
+        const { articles } = state.feedState.feed.find((item: IFeed) => item.url === url)
         const diff = checkFeedDiff(articles, newFeed.articles)
-        const obj = { newFeed, diff: diff.length}
-        thunkApi.dispatch(feedSlice.actions.fetchByDif(obj))
+        const obj = { ...newFeed, diff: diff.length}
+        if(diff.length > 0){
+            console.log("SOMETHING DRASTIC HAS HAPPENED")
+            thunkApi.dispatch(feedSlice.actions.fetchByDif(obj))
+        }
         longPooling(url)
      }
  )
@@ -44,15 +48,15 @@ const feedSlice = createSlice({
     name: 'feedSlice',
     initialState,
     reducers: {
-        fetchByDif(state, action: PayloadAction< Object>){
-            console.log(action.payload)
-            state.feed.push(action.payload)
+        fetchByDif(state, action: PayloadAction< IFeed>){
+            const { url, articles } = action.payload
+            const indexOfChangedElem = state.feed.map((item: IFeed) => item.url).indexOf(url)
+            state.feed[indexOfChangedElem].articles = articles 
         }
     },
     extraReducers: (builder) =>{
         builder.addCase(fetchFeed.pending.type, (state, action: PayloadAction<IFeed>) => {
-            state.isLoading = false
-            state.feed.push(action.payload)
+            state.isLoading = true
         })
         builder.addCase(fetchFeed.fulfilled.type, (state, action: PayloadAction<IFeed>) => {
             state.isLoading = false

@@ -15,6 +15,7 @@ const Feed: FC<Props> = (props: Props) => {
   const {list} = useTypedSelector(state => state.listSlice)
 
   const { link, articles, title, description, id, image, url } = props.feed;
+  console.log(props.feed)
 
   const subscribeHandler = () => {
     const obj: ListItem = {
